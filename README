@@ -1,0 +1,40 @@
+Full name:  Ryan Smith_
+SEAS login: rysmit_
+
+Which features did you implement? 
+  (list features, or write 'Entire assignment')
+  Entire assignment. However, my program has a bug in it's tokenizer and is mishandling
+  numbers and symbols such as periods. The use of these in XPaths can cause a false failure. 
+  I plan on correcting the tokenizer before continuing to the next milestone but unfortunately,
+  it does not appear that I will accomplish this before 10:00 this evening.
+  Otherwise, I believe my program is very solid. The trees returned by the parser and the comparison to 
+  the Document objects appears very accurate.
+  
+  An example of my program's current weakness:
+ 	 It can handle complex XPath with nested tests just fine. Here is an example of one:
+  		"/bookstore/book[title[text()="XQuery Kick Start"]][test/author[contains(text(), "James McGovern")]]"
+  	It can fail on simple tests that involve the symbols it is handling incorrectly. Here is an example of one:
+  		"/bookstore/book/title[text()="JK. Rowling"]"
+  		
+  I would appreciate it if you could consider this when constructing test cases.
+
+Did you complete any extra-credit tasks? If so, which ones?
+  (list extra-credit tasks)
+  No
+
+Any special instructions for building and running your solution?
+  (include detailed instructions, or write 'None')
+  None
+
+Did you personally write _all_ the code you are submitting
+(other than code from the course web page)?
+  [X] Yes
+  [ ] No
+
+Did you copy any code from the Internet, or from classmates?
+  [ ] Yes
+  [X] No
+
+Did you collaborate with anyone on this assignment?
+  [ ] Yes
+  [X] No
