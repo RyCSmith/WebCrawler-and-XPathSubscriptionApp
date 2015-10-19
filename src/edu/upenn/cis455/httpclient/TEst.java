@@ -2,6 +2,7 @@ package edu.upenn.cis455.httpclient;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,26 +15,28 @@ import org.xml.sax.SAXException;
 
 public class TEst {
 
-	public static void main(String[] args) {
-		HttpClient client = new HttpClient("http://www.cis.upenn.edu");
+	public static void main(String[] args) throws MalformedURLException {
+		HttpsClient client = new HttpsClient("https://www.yahoo.com");
+//		HttpClient client = new HttpClient("http://www.google.com");
 		try {
 			client.makeRequest();
-			String document = client.getDocument();
-			System.out.println(document);
-			InputSource inputSource = new InputSource( new StringReader( document ) );
-	        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	        DocumentBuilder parser = docFactory.newDocumentBuilder();
-	        Document dom = parser.parse(inputSource); 
+			int a= 1;
+//			String document = client.getDocument();
+//			System.out.println(document);
+//			InputSource inputSource = new InputSource( new StringReader( document ) );
+//	        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+//	        DocumentBuilder parser = docFactory.newDocumentBuilder();
+//	        Document dom = parser.parse(inputSource); 
 	    }
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-	    catch (SAXException e) {
-	    }
-	    catch (FactoryConfigurationError e) { 
-	    }
-	    catch (ParserConfigurationException e) { 
-	    }
+//	    catch (SAXException e) {
+//	    }
+//	    catch (FactoryConfigurationError e) { 
+//	    }
+//	    catch (ParserConfigurationException e) { 
+//	    }
 	   
 	  }
 }

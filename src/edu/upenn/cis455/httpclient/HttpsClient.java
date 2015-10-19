@@ -1,42 +1,49 @@
 package edu.upenn.cis455.httpclient;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.util.HashMap;
 
+import javax.net.ssl.HttpsURLConnection;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
 
-public class HttpClient {
-	URLInfo urlInfo;
+public class HttpsClient {
+	URL url;
 	HashMap<String, String> requestHeaders;
 	HashMap<String, String> responseData;
 	
-	public HttpClient(String url) {
+	public HttpsClient(String url) throws MalformedURLException {
 		requestHeaders = new HashMap<String, String>();
 		responseData = new HashMap<String, String>();
-		urlInfo = new URLInfo(url);
+		this.url = new URL(url);
 	}
 	
 	public void makeRequest() throws IOException {
-		System.out.println("CONGRATS! It's working!");
-		InetAddress ip = InetAddress.getByName(urlInfo.getHostName());
-		Socket socket = new Socket(ip, urlInfo.getPortNo());
-		String request = getHeaders();
+	    HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+	    String request = getHeaders();
 		byte[] response = request.getBytes("UTF-8");
-		OutputStream outStream = socket.getOutputStream();
-		outStream.write(response,0,response.length);
+	    connection.setUseCaches(false);
+	    connection.setDoOutput(true);
+
+	    DataOutputStream outStream = new DataOutputStream (connection.getOutputStream());
+	    outStream.write(response,0,response.length);
 		outStream.flush();
-		readResponse(socket);
-		socket.close();
+		connection.getResponseCode();
+		readResponse(connection);
+	    outStream.close();
+
 	}
 	
-	private void readResponse(Socket socket) throws IOException {
+	private void readResponse(HttpsURLConnection socket) throws IOException {
 		StringBuilder response = new StringBuilder();
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		String line;
@@ -72,10 +79,10 @@ public class HttpClient {
 	
 	private String getHeaders() {
 		StringBuilder headerString = new StringBuilder();
-		headerString.append("GET " + urlInfo.getFilePath() + " HTTP/1.0\r\n");
+		headerString.append("GET " + url.getFile() + " HTTP/1.0\r\n");
 		headerString.append("User-Agent: cis455crawler");
 		if (!checkHostHeader()) 
-			headerString.append("Host: " + urlInfo.getHostName() + "\r\n");
+			headerString.append("Host: " + url.getHost() + "\r\n");
 		for (String key : requestHeaders.keySet()) {
 			headerString.append(key + ": " + requestHeaders.get(key) + "\r\n");
 		}
