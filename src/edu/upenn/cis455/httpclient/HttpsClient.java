@@ -33,6 +33,7 @@ public class HttpsClient {
 		byte[] response = request.getBytes("UTF-8");
 	    connection.setUseCaches(false);
 	    connection.setDoOutput(true);
+	    connection.setRequestMethod("GET");
 
 	    DataOutputStream outStream = new DataOutputStream (connection.getOutputStream());
 	    outStream.write(response,0,response.length);
@@ -79,7 +80,7 @@ public class HttpsClient {
 	
 	private String getHeaders() {
 		StringBuilder headerString = new StringBuilder();
-		headerString.append("GET " + url.getFile() + " HTTP/1.0\r\n");
+		//headerString.append("GET " + url.getFile() + " HTTP/1.0\r\n");
 		headerString.append("User-Agent: cis455crawler");
 		if (!checkHostHeader()) 
 			headerString.append("Host: " + url.getHost() + "\r\n");
