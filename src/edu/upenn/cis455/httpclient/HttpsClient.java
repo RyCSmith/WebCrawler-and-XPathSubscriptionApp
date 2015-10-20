@@ -3,6 +3,7 @@ package edu.upenn.cis455.httpclient;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -20,32 +21,48 @@ import edu.upenn.cis455.crawler.info.URLInfo;
 
 public class HttpsClient extends HttpClient {
 	URL url;
-	
-	public HttpsClient(String url) throws MalformedURLException {
-		super(url);
+	long contentLength;
+	long lastModified;
+	public HttpsClient(String url, String method) throws MalformedURLException {
+		super(url, method);
 		this.url = new URL(url);
 	}
 	
 	public void makeRequest() throws IOException {
 	    HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
-	    String request = getHeaders();
-		byte[] response = request.getBytes("UTF-8");
 	    connection.setUseCaches(false);
 	    connection.setDoOutput(true);
-	    connection.setRequestMethod("GET");
+	    connection.setRequestMethod(method);
+	    addHeaders(connection);
 
 	    DataOutputStream outStream = new DataOutputStream (connection.getOutputStream());
-	    outStream.write(response,0,response.length);
+	    //outStream.write(response,0,response.length);
 		outStream.flush();
-		System.out.println(connection.getContentType());
-		System.out.println(connection.getContentLengthLong());
-		System.out.println(connection.getLastModified());
-		Map<String,List<String>> map = connection.getHeaderFields();
-		
-			
-		
+		String c = connection.getContentType();
+		responseData.put("Content-Type", connection.getContentType());
+		contentLength = connection.getContentLengthLong();
+		lastModified = connection.getLastModified();
 		readResponse(connection.getInputStream());
 	    outStream.close();
 	}
-
+	
+	protected void addHeaders(HttpsURLConnection connection) {
+		connection.addRequestProperty("User-Agent", "cis455crawler");
+		//connection.addRequestProperty("Host", urlInfo.getHostName() + "\r\n");
+		for (String key : requestHeaders.keySet()) {
+			connection.addRequestProperty(key, requestHeaders.get(key));
+		}
+	}
+	
+	@Override
+	protected void readResponse(InputStream inStream) throws IOException {
+		StringBuilder response = new StringBuilder();
+		BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
+		String line;
+		while ((line = in.readLine()) != null) {
+				response.append(line + "\n");
+		}
+		responseData.put("Body", response.toString());
+		inStream.close();
+	}
 }

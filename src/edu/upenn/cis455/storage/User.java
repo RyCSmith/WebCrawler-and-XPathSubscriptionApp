@@ -1,5 +1,8 @@
 package edu.upenn.cis455.storage;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.PrimaryKey;
 
@@ -16,6 +19,8 @@ public class User {
 	private String firstName;
 	@SecondaryKey(relate=ONE_TO_ONE)
 	private String lastName;
+	@SecondaryKey(relate=ONE_TO_MANY)
+	private Set<String> channels = new HashSet<String>();
 	
 	public String getUsername() {
 		return username;
@@ -41,4 +46,11 @@ public class User {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	public Set<String> getChannels() {
+		return channels;
+	}
+	public void setChannels(Set<String> channels) {
+		this.channels = channels;
+	}
+	
 }

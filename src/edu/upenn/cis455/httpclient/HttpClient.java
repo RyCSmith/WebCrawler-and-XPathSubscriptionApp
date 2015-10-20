@@ -22,10 +22,12 @@ public class HttpClient {
 	HashMap<String, String> requestHeaders;
 	HashMap<String, String> responseData;
 	public enum Type {XML, HTML, RSS, UNKNOWN}
+	String method;
 	
-	public HttpClient(String url) {
+	public HttpClient(String url, String method) {
 		requestHeaders = new HashMap<String, String>();
 		responseData = new HashMap<String, String>();
+		this.method = method;
 		urlInfo = new URLInfo(url);
 	}
 	
@@ -74,7 +76,7 @@ public class HttpClient {
 	
 	protected String getHeaders() {
 		StringBuilder headerString = new StringBuilder();
-		headerString.append("GET " + urlInfo.getFilePath() + " HTTP/1.0\r\n");
+		headerString.append(method + " " + urlInfo.getFilePath() + " HTTP/1.0\r\n");
 		headerString.append("User-Agent: cis455crawler\r\n");
 		if (!checkHostHeader()) 
 			headerString.append("Host: " + urlInfo.getHostName() + "\r\n");
@@ -94,7 +96,7 @@ public class HttpClient {
 	}
 	
 	public Type getContentType() {
-		String typeString = responseData.get("Content-Type").trim();
+		String typeString = responseData.get("Content-Type");
 		if (typeString == null) {
 			String document = getDocument();
 			if (document.startsWith("<?xml"))
@@ -113,6 +115,16 @@ public class HttpClient {
 		else if (typeString.equalsIgnoreCase("application/rss"))
 			return Type.RSS;
 		else if (typeString.equalsIgnoreCase("application/rss+xml"))
+			return Type.RSS;
+		else if (typeString.matches(".*(text/html|TEXT/HTML).*"))
+			return Type.HTML;
+		else if (typeString.matches(".*(text/xml|TEXT/XML).*"))
+			return Type.XML;
+		else if (typeString.matches(".*(application/xml|APPLICATION/XML).*"))
+			return Type.XML;
+		else if (typeString.matches(".*(application/rss|APPLICATION/RSS).*"))
+			return Type.RSS;
+		else if (typeString.matches(".*(application/rss+xml|APPLICATION/RSS+XML).*"))
 			return Type.RSS;
 		else
 			return Type.UNKNOWN;
