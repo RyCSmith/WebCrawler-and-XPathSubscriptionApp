@@ -2,13 +2,18 @@ package edu.upenn.cis455.httpclient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
+import java.text.ParseException;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
 
@@ -16,6 +21,7 @@ public class HttpClient {
 	URLInfo urlInfo;
 	HashMap<String, String> requestHeaders;
 	HashMap<String, String> responseData;
+	public enum Type {XML, HTML, RSS, UNKNOWN}
 	
 	public HttpClient(String url) {
 		requestHeaders = new HashMap<String, String>();
@@ -24,7 +30,6 @@ public class HttpClient {
 	}
 	
 	public void makeRequest() throws IOException {
-		System.out.println("CONGRATS! It's working!");
 		InetAddress ip = InetAddress.getByName(urlInfo.getHostName());
 		Socket socket = new Socket(ip, urlInfo.getPortNo());
 		String request = getHeaders();
@@ -32,35 +37,32 @@ public class HttpClient {
 		OutputStream outStream = socket.getOutputStream();
 		outStream.write(response,0,response.length);
 		outStream.flush();
-		readResponse(socket);
+		readResponse(socket.getInputStream());
 		socket.close();
 	}
 	
-	private void readResponse(Socket socket) throws IOException {
+	protected void readResponse(InputStream inStream) throws IOException {
 		StringBuilder response = new StringBuilder();
-		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
 		String line;
 		boolean pastBreak = false;
-		int lineCount = 0;
 		while ((line = in.readLine()) != null) {
-			if (line.startsWith("HTTP/1.") && lineCount == 0){
+			if (line.startsWith("HTTP/1.")){
 				String[] pieces = line.split(" ");
-				if (pieces.length != 3)
+				if (pieces.length < 3)
 					throw new IllegalStateException("HTTP header line had improper format.");
 				responseData.put("Protocol", pieces[0]);
 				responseData.put("ResponseCode", pieces[1]);
-				responseData.put("ResponseMessage", pieces[2]);
+				StringBuilder message = new StringBuilder();
+				for (int i = 2; i < pieces.length; i++) {
+					message.append(pieces[i]);
+				}
+				responseData.put("ResponseMessage", message.toString());
 			}
-			else {
-				pastBreak = true;
-			}
-			if (line.equals("")) {
+			else if (line.equals(""))
 					pastBreak = true;
-			}
 			else if (!pastBreak) {
-				try {
-					responseData.put(line.substring(0, line.indexOf(":")), line.substring(line.indexOf(":") + 1).trim());
-				} catch (Exception e) {}
+				responseData.put(line.substring(0, line.indexOf(":")).trim(), line.substring(line.indexOf(":") + 1).trim());
 			}
 			else {
 				response.append(line + "\n");
@@ -70,10 +72,10 @@ public class HttpClient {
 		in.close();
 	}
 	
-	private String getHeaders() {
+	protected String getHeaders() {
 		StringBuilder headerString = new StringBuilder();
 		headerString.append("GET " + urlInfo.getFilePath() + " HTTP/1.0\r\n");
-		headerString.append("User-Agent: cis455crawler");
+		headerString.append("User-Agent: cis455crawler\r\n");
 		if (!checkHostHeader()) 
 			headerString.append("Host: " + urlInfo.getHostName() + "\r\n");
 		for (String key : requestHeaders.keySet()) {
@@ -89,6 +91,72 @@ public class HttpClient {
 				return true;
 		}
 		return false;
+	}
+	
+	public Type getContentType() {
+		String typeString = responseData.get("Content-Type").trim();
+		if (typeString == null) {
+			String document = getDocument();
+			if (document.startsWith("<?xml"))
+				return Type.XML;
+			else if (document.startsWith("<!DOCTYPE html>"))
+				return Type.HTML;
+			else
+				return Type.UNKNOWN;
+		}
+		if (typeString.equalsIgnoreCase("text/html"))
+			return Type.HTML;
+		else if (typeString.equalsIgnoreCase("text/xml"))
+			return Type.XML;
+		else if (typeString.equalsIgnoreCase("application/xml"))
+			return Type.XML;
+		else if (typeString.equalsIgnoreCase("application/rss"))
+			return Type.RSS;
+		else if (typeString.equalsIgnoreCase("application/rss+xml"))
+			return Type.RSS;
+		else
+			return Type.UNKNOWN;
+	}
+	
+	public long getLastModified() {
+		String dateString = responseData.get("Last-Modified");
+		if (dateString == null) 
+			return -1;
+		Date requestDate;
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+			requestDate = format.parse(dateString);
+		} catch (ParseException e0) {
+			try {
+				SimpleDateFormat format = new SimpleDateFormat("EEE, dd-MMM-yy HH:mm:ss zzz");
+				requestDate = format.parse(dateString);
+			}catch (ParseException e1) {
+				try {
+					SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
+					requestDate = format.parse(dateString);
+				}catch (ParseException e2) {
+					requestDate = null;
+				}
+			}
+		}
+		if (requestDate == null)
+			return -1;
+		Calendar requestTime = Calendar.getInstance();
+		requestTime.setTime(requestDate);
+		return requestTime.getTimeInMillis();
+	}
+	
+	public int getContentLength() {
+		String lengthString = responseData.get("Content-Length");
+		if (lengthString == null)
+			return -1;
+		int length;
+		try {
+			length = Integer.parseInt(lengthString);
+		} catch (Exception e) {
+			return -1;
+		}
+		return length;
 	}
 	
 	public void addHeader(String name, String value) {

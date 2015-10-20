@@ -16,11 +16,18 @@ import org.xml.sax.SAXException;
 public class TEst {
 
 	public static void main(String[] args) throws MalformedURLException {
-		HttpsClient client = new HttpsClient("https://www.yahoo.com");
-//		HttpClient client = new HttpClient("http://www.google.com");
+//		HttpsClient client = new HttpsClient("https://www.yahoo.com");
+		HttpClient client = new HttpClient("http://www.w3schools.com/xml/simple.xml");
 		try {
 			client.makeRequest();
 			int a= 1;
+			for (String key : client.responseData.keySet()) {
+				System.out.println(key + ": " + client.responseData.get(key));
+			}
+			
+			System.out.println("ContentLength"+ ": " +client.getContentLength());
+			System.out.println("ContentType"+ ": " +client.getContentType());
+			System.out.println("Last Modified"+ ": " +client.getLastModified());
 //			String document = client.getDocument();
 //			System.out.println(document);
 //			InputSource inputSource = new InputSource( new StringReader( document ) );
