@@ -21,7 +21,7 @@ public class HttpClient {
 	URLInfo urlInfo;
 	HashMap<String, String> requestHeaders;
 	HashMap<String, String> responseData;
-	public enum Type {XML, HTML, RSS, UNKNOWN}
+	public static enum Type {XML, HTML, RSS, UNKNOWN}
 	String method;
 	
 	public HttpClient(String url, String method) {

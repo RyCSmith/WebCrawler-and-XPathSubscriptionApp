@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
 
+import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
+import edu.upenn.cis455.crawler.info.URLHelper;
 import edu.upenn.cis455.httpclient.HttpClient;
+import edu.upenn.cis455.httpclient.HttpsClient;
 public class CrawlerResources {
 
     public static List<String> extractUrls(String input) {
@@ -26,21 +29,32 @@ public class CrawlerResources {
         return result;
     }
     
-    public void processRobotsTxt(String url) {
-    	
+    public static RobotsTxtInfo processRobotsTxt(String url) {
+    	String robotsText = fetchRobotsTxtText(url);
+    	String[] lines = robotsText.split("\n");
+    	return null;
     }
     
-    public static String extractDomain(String url) {
-    	if (url.startsWith("http://"))
-    		url = url.substring(7);
-    	else if (url.startsWith("https://"))
-    		url = url.substring(8);
-    	if (url.startsWith("www"))
-    		url = url.substring(3);
-    	if (url.indexOf('/') >= 0)
-    		url = url.substring(0, url.indexOf('/'));
-    	return url;
+    private static String fetchRobotsTxtText(String url) {
+    	try {
+	    	URLHelper.Protocol protocol = URLHelper.getProtocol(url);
+	    	url = URLHelper.removeFilePath(url);
+	    	url = url + "/robots.txt";
+	    	StringBuilder builder = new StringBuilder();
+	    	HttpClient client = null;
+	    	switch(protocol) {
+	    	case HTTP:
+	    		client = new HttpClient(url, "GET");
+	    	case HTTPS:
+	    		client = new HttpsClient(url, "GET");
+	    	}
+	    	client.makeRequest();
+	    	return client.getDocument();
+    	} catch (Exception e) {
+    		return null;
+    	}
     }
     
+
     
 }

@@ -1,9 +1,12 @@
 package edu.upenn.cis455.crawler;
 
+import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import edu.upenn.cis455.crawler.info.DomainQueue;
+import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
+import edu.upenn.cis455.httpclient.HttpsClient;
 
 
 public class XPathCrawler {
@@ -28,8 +31,8 @@ public class XPathCrawler {
 		if (args.length == 4)
 			maxNumFiles = Integer.parseInt(args[3]);
 		masterQueue = new LinkedList<DomainQueue>();
-		System.out.println(CrawlerResources.extractDomain(startURL));
-		//HttpClient client = new HttpClient()
+		RobotsTxtInfo robotstxt = CrawlerResources.processRobotsTxt(startURL);
+
 	}
 
 	public void run() {
