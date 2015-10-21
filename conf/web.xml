@@ -8,27 +8,28 @@
    <display-name>Channel Subscription Servlets</display-name>
    <context-param>
      <param-name>BDBstore</param-name>
-     <param-value>database</param-value>
+     <param-value>/Users/ryancsmith/Documents/workspace/555HW2MS2/LocalDB</param-value>
    </context-param>
     
    <servlet>
-     <servlet-name>xpath</servlet-name>
-     <servlet-class>edu.upenn.cis455.servlet.XPathServlet</servlet-class> 
+     <servlet-name>createAccount</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.CreateAccountServlet</servlet-class> 
    </servlet>
     
    <servlet-mapping>
-     <servlet-name>xpath</servlet-name>
-     <url-pattern>/xpath</url-pattern>
+     <servlet-name>createAccount</servlet-name>
+     <url-pattern>/createAccount</url-pattern>
    </servlet-mapping>  
    
    <servlet>
-     <servlet-name>handler</servlet-name>
-     <servlet-class>edu.upenn.cis455.servlet.HandlerServlet</servlet-class> 
+     <servlet-name>account</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.AccountServlet</servlet-class> 
    </servlet>
     
    <servlet-mapping>
-     <servlet-name>handler</servlet-name>
-     <url-pattern>/handler</url-pattern>
+     <servlet-name>account</servlet-name>
+     <url-pattern>/account</url-pattern>
    </servlet-mapping>  
+   
 
 </web-app>

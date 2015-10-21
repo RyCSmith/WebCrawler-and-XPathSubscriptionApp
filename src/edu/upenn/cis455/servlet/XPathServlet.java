@@ -82,7 +82,7 @@ public class XPathServlet extends HttpServlet {
 					domDoc = ServletSupport.buildDocument(url, true);
 				} 
 				else {
-					HttpClient client = new HttpClient(request.getParameter("url"));
+					HttpClient client = new HttpClient(request.getParameter("url"), "GET");
 					client.makeRequest();
 					domDoc = ServletSupport.buildDocument(client.getDocument(), false);
 				}

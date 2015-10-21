@@ -120,6 +120,27 @@ public class DBWrapper {
 		}
 	}
 	
+	public boolean checkUserExists(String username) {
+		User u = userStore.pIdx.get("smithryc");
+		return u != null;
+	}
+	
+	public void addUser(String username, String password) {
+		User newUser = new User();
+		newUser.setUsername(username);
+		newUser.setPassword(password);
+		userStore.pIdx.put(newUser);
+	}
+	
+	public void addUser(String username, String password, String firstName, String lastName) {
+		User newUser = new User();
+		newUser.setUsername(username);
+		newUser.setPassword(password);
+		newUser.setFirstName(firstName);
+		newUser.setLastName(lastName);
+		userStore.pIdx.put(newUser);
+	}
+	
 	public void testPrint() {
 		PrimaryIndex<String, URLData> data = store.getPrimaryIndex(String.class, URLData.class);
 		EntityCursor<URLData> data_cursor = data.entities();
