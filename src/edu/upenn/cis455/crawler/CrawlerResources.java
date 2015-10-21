@@ -9,7 +9,7 @@ public class CrawlerResources {
 
     public static List<String> extractUrls(String input) {
         List<String> result = new ArrayList<String>();
-        HttpClient client = new HttpClient("http://www.google.com");
+        HttpClient client = new HttpClient("http://www.google.com", "GET");
         try {
 			client.makeRequest();
 		} catch (IOException e) {
@@ -18,7 +18,7 @@ public class CrawlerResources {
 		}
         
         Pattern pattern = Pattern.compile("\\s*(?i)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))");
-//"href=\"([^\"]*)\"" this works too
+        //"href=\"([^\"]*)\"" this works too
         Matcher matcher = pattern.matcher(client.getDocument());
         while (matcher.find()) {
             result.add(matcher.group());
@@ -30,5 +30,17 @@ public class CrawlerResources {
     	
     }
     
-    make
+    public static String extractDomain(String url) {
+    	if (url.startsWith("http://"))
+    		url = url.substring(7);
+    	else if (url.startsWith("https://"))
+    		url = url.substring(8);
+    	if (url.startsWith("www"))
+    		url = url.substring(3);
+    	if (url.indexOf('/') >= 0)
+    		url = url.substring(0, url.indexOf('/'));
+    	return url;
+    }
+    
+    
 }

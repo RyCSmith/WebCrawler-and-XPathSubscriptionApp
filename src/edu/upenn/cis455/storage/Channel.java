@@ -15,9 +15,6 @@ public class Channel {
 	private String channelPath;
 	@SecondaryKey(relate=ONE_TO_MANY)
 	private Set<String> xpaths = new HashSet<String>();
-	@SecondaryKey(relate=ONE_TO_MANY)
-	private Set<String> articleUrls = new HashSet<String>();
-	
 	public String getChannelPath() {
 		return channelPath;
 	}
@@ -29,15 +26,6 @@ public class Channel {
 	}
 	public void setXpaths(Set<String> xpaths) {
 		this.xpaths = xpaths;
-	}
-	public Set<String> getArticleUrls() {
-		return articleUrls;
-	}
-	public void setArticleUrls(Set<String> articleUrls) {
-		this.articleUrls = articleUrls;
-	}
-
-	
-	
+	}	
 	
 }
