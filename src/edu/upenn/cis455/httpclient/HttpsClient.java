@@ -34,16 +34,11 @@ public class HttpsClient extends HttpClient {
 	    connection.setDoOutput(true);
 	    connection.setRequestMethod(method);
 	    addHeaders(connection);
-
-	    DataOutputStream outStream = new DataOutputStream (connection.getOutputStream());
-	    //outStream.write(response,0,response.length);
-		outStream.flush();
 		String c = connection.getContentType();
 		responseData.put("Content-Type", connection.getContentType());
 		contentLength = connection.getContentLengthLong();
 		lastModified = connection.getLastModified();
 		readResponse(connection.getInputStream());
-	    outStream.close();
 	}
 	
 	protected void addHeaders(HttpsURLConnection connection) {

@@ -16,7 +16,7 @@ import org.xml.sax.SAXException;
 public class TEst {
 
 	public static void main(String[] args) throws MalformedURLException {
-		HttpsClient client = new HttpsClient("https://dbappserv.cis.upenn.edu/robots.txt", "GET");
+		HttpsClient client = new HttpsClient("https://www.google.com", "GET");
 //		HttpClient client = new HttpClient("http://www.yahoo.com/robots.txt", "GET");
 		client.addHeader("Host", "yahoo.com");
 		try {
