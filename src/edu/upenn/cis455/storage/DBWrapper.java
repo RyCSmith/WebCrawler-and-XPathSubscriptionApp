@@ -120,4 +120,12 @@ public class DBWrapper {
 		}
 	}
 	
+	public void testPrint() {
+		PrimaryIndex<String, URLData> data = store.getPrimaryIndex(String.class, URLData.class);
+		EntityCursor<URLData> data_cursor = data.entities();
+		for (URLData current : data_cursor) {
+			System.out.println(current.getUrl() + current.getLastAccessed());
+		}
+	}
+	
 }

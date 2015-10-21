@@ -26,7 +26,7 @@ public class XPathCrawler {
 	HashSet<String> crawledThisSession;
 	
 	public static void main(String[] args) {
-		new XPathCrawler(args).run();
+		new XPathCrawler(args);
 	}
 	
 	public XPathCrawler(String[] args) {
@@ -54,8 +54,9 @@ public class XPathCrawler {
 		initialDomainQueue.setRobotsInfo(robotstxt);
 		initialDomainQueue.addToQueue(startURL);
 		masterQueue.offer(initialDomainQueue);
-		run();
-		database.closeDB();
+		//run();
+		database.testPrint();
+		//database.closeDB();
 	}
 
 	public void run() {
