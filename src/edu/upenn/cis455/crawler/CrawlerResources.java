@@ -1,6 +1,7 @@
 package edu.upenn.cis455.crawler;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.*;
 
@@ -32,7 +33,69 @@ public class CrawlerResources {
     public static RobotsTxtInfo processRobotsTxt(String url) {
     	String robotsText = fetchRobotsTxtText(url);
     	String[] lines = robotsText.split("\n");
+    	String bestUserAgent = findBestUserAgent(lines);
+    	String[] relevantLines = separateRelevantLines(lines, bestUserAgent);
+    	RobotsTxtInfo robotsTxt = new RobotsTxtInfo();
+    	robotsTxt.setUserAgent(bestUserAgent);
+    	for (String line : relevantLines) {
+    		String[] pieces = null;
+    		if (line.indexOf(":") > 0)
+				pieces = line.split(":"); 
+			if (pieces != null && pieces.length == 2){
+	    		String type = pieces[0].trim();
+	    		if (type.equalsIgnoreCase("Disallow"))
+	    			robotsTxt.addDisallowedLink(pieces[1].trim());
+	    		else if (type.equalsIgnoreCase("Allowed"))
+	    			robotsTxt.addAllowedLink(pieces[1].trim());
+	    		else if (type.equalsIgnoreCase("Crawl-delay"))
+	    			robotsTxt.setCrawlDelay(pieces[1].trim());
+			}
+    	}
+		return robotsTxt;
+    }
+    
+    public static String findBestUserAgent(String[] lines) {
+    	boolean allFound = false;
+    	for (String line : lines) {
+    		if (line.contains("User-agent")) {
+    			if (line.contains("cis455crawler"))
+    				return "cis455crawler";
+    			else if (line.contains("*"))
+    				allFound = true;
+    		}
+    	}
+    	if (allFound)
+    		return "*";
     	return null;
+    }
+    
+    public static String[] separateRelevantLines(String[] lines, String bestUserAgent) {
+    	int startIndex = 0;
+    	int endIndex = 0;
+    	if (bestUserAgent != null) {
+    		for (int i = 0; i < lines.length; i++){
+    			if (lines[i].contains("User-agent")){
+	    			if (lines[i].contains(bestUserAgent)) {
+	    				endIndex = 0;
+	    				startIndex = i;
+	    			}
+	    			else
+	    				endIndex = i;
+    			}
+    		}
+    		if (endIndex == 0)
+    			endIndex = lines.length;
+    		return Arrays.copyOfRange(lines, startIndex, endIndex);
+    	}
+    	else { //we enter this case when we have established that all user agents are not referring to us (we want to disregard all instructions under them)
+    		for (int i = 0; i < lines.length; i++) {
+    			if (lines[i].contains("User-agent")){
+    				startIndex = i;
+    				break;
+    			}
+    		}
+    		return Arrays.copyOfRange(lines, 0, startIndex);
+    	}
     }
     
     private static String fetchRobotsTxtText(String url) {
@@ -45,12 +108,14 @@ public class CrawlerResources {
 	    	switch(protocol) {
 	    	case HTTP:
 	    		client = new HttpClient(url, "GET");
+	    		break;
 	    	case HTTPS:
 	    		client = new HttpsClient(url, "GET");
 	    	}
 	    	client.makeRequest();
 	    	return client.getDocument();
     	} catch (Exception e) {
+    		e.printStackTrace();
     		return null;
     	}
     }

@@ -48,7 +48,6 @@ public class HttpsClient extends HttpClient {
 	
 	protected void addHeaders(HttpsURLConnection connection) {
 		connection.addRequestProperty("User-Agent", "cis455crawler");
-		//connection.addRequestProperty("Host", urlInfo.getHostName() + "\r\n");
 		for (String key : requestHeaders.keySet()) {
 			connection.addRequestProperty(key, requestHeaders.get(key));
 		}

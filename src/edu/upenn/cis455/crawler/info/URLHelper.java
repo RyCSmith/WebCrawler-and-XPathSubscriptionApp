@@ -33,8 +33,9 @@ public class URLHelper {
     	if (url.indexOf('/') >= 0) {
     		index += url.indexOf('/');
     		url = url.substring(0, url.indexOf('/'));
+    		return original.substring(0, index);
     	}
-    	return original.substring(0, index);
+    	return original;
     }
     
     public static Protocol getProtocol(String url) {

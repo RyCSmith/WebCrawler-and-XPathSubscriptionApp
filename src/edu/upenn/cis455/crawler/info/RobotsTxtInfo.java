@@ -1,7 +1,5 @@
 package edu.upenn.cis455.crawler.info;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class RobotsTxtInfo {
@@ -27,8 +25,10 @@ public class RobotsTxtInfo {
 		allowedLinks.add(link);
 	}
 	
-	public void addCrawlDelay(int delay){
-		crawlDelay = delay;
+	public void setCrawlDelay(String delay){
+		try {
+			crawlDelay = Integer.parseInt(delay);
+		} catch (Exception e) {}
 	}
 	
 	public void setUserAgent(String agent){
