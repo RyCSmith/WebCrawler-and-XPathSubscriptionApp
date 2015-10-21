@@ -41,5 +41,20 @@ public class DomainQueue {
 		this.robotsInfo = robotsInfo;
 	}
 	
+	public boolean hasNext() {
+		if (queue.isEmpty())
+			return false;
+		return true;
+	}
+
+	public long getLastCrawled() {
+		return lastCrawled;
+	}
+
+	public void setLastCrawled(long lastCrawled) {
+		this.lastCrawled = lastCrawled;
+	}
+	
+	
 	
 }

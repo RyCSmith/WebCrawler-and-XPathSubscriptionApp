@@ -23,6 +23,8 @@ import org.w3c.tidy.Tidy;
 import org.xml.sax.InputSource;
 
 import edu.upenn.cis455.crawler.info.URLInfo;
+import edu.upenn.cis455.httpclient.HttpClient;
+import edu.upenn.cis455.xpathengine.Parser;
 
 public class ServletSupport {
 
@@ -109,6 +111,30 @@ public class ServletSupport {
 			}   
 	        domDoc.getDocumentElement().normalize();
 	        return domDoc;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static Document buildDocFromString(String documentString, HttpClient.Type type) {
+		try {
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        factory.setNamespaceAware(false);
+	        factory.setValidating(false);
+	        factory.setFeature("http://xml.org/sax/features/namespaces", false);
+	        factory.setFeature("http://xml.org/sax/features/validation", false);
+	        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+	        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false); 
+	        DocumentBuilder parser = factory.newDocumentBuilder();
+			Document domDoc;
+			if (type == HttpClient.Type.HTML){
+				documentString = cleanHTML(documentString);
+			}
+			InputSource inputSource = new InputSource(new StringReader(documentString));
+			domDoc = parser.parse(inputSource); 
+	        domDoc.getDocumentElement().normalize();
+	        return domDoc;
+	        
 		} catch (Exception e) {
 			return null;
 		}

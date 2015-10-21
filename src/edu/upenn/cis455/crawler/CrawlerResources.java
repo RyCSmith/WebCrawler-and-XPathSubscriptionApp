@@ -2,34 +2,46 @@ package edu.upenn.cis455.crawler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.regex.*;
 
+import edu.upenn.cis455.crawler.info.DomainQueue;
 import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
 import edu.upenn.cis455.crawler.info.URLHelper;
 import edu.upenn.cis455.httpclient.HttpClient;
 import edu.upenn.cis455.httpclient.HttpsClient;
 public class CrawlerResources {
 
-    public static List<String> extractUrls(String input) {
-        List<String> result = new ArrayList<String>();
-        HttpClient client = new HttpClient("http://www.google.com", "GET");
-        try {
-			client.makeRequest();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        Pattern pattern = Pattern.compile("\\s*(?i)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))");
-        //"href=\"([^\"]*)\"" this works too
-        Matcher matcher = pattern.matcher(client.getDocument());
+    public static ArrayList<String> parseForLinks(String documentText) {
+        ArrayList<String> result = new ArrayList<String>();
+        Pattern pattern = Pattern.compile("\\s*(?i)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))"); //"href=\"([^\"]*)\"" this works too
+        Matcher matcher = pattern.matcher(documentText);
         while (matcher.find()) {
             result.add(matcher.group());
         }
         return result;
     }
     
+    public static void qualifyLinks(String url, ArrayList<String> links) {
+    	if (url.charAt(url.length() - 1) == '/')
+    		url = url.substring(0, url.length() - 1);
+    	for (int i = 0; i < links.size(); i++) {
+    		String link = links.get(i);
+    		link = link.substring(link.indexOf("\"") + 1);
+    		link = link.substring(0, link.lastIndexOf("\""));
+    		if (!link.startsWith("http")) {
+	    		if (link.startsWith("/")){
+	    			links.set(i, url + link);
+	    		}
+	    		else {
+	    			links.set(i, url + "/" + link);
+	    		}
+    		}
+    	}
+    }
     public static RobotsTxtInfo processRobotsTxt(String url) {
     	String robotsText = fetchRobotsTxtText(url);
     	String[] lines = robotsText.split("\n");
@@ -103,7 +115,6 @@ public class CrawlerResources {
 	    	URLHelper.Protocol protocol = URLHelper.getProtocol(url);
 	    	url = URLHelper.removeFilePath(url);
 	    	url = url + "/robots.txt";
-	    	StringBuilder builder = new StringBuilder();
 	    	HttpClient client = null;
 	    	switch(protocol) {
 	    	case HTTP:
@@ -116,6 +127,24 @@ public class CrawlerResources {
 	    	return client.getDocument();
     	} catch (Exception e) {
     		e.printStackTrace();
+    		return null;
+    	}
+    }
+    
+    public static HttpClient attemptRequest(String url, String method) {
+    	try {
+    		URLHelper.Protocol protocol = URLHelper.getProtocol(url);
+	    	HttpClient client = null;
+	    	switch(protocol) {
+	    	case HTTP:
+	    		client = new HttpClient(url, method);
+	    		break;
+	    	case HTTPS:
+	    		client = new HttpsClient(url, method);
+	    	}
+	    	client.makeRequest();
+	    	return client;
+    	}catch (Exception e) {
     		return null;
     	}
     }

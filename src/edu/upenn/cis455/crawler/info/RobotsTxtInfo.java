@@ -27,7 +27,7 @@ public class RobotsTxtInfo {
 	
 	public void setCrawlDelay(String delay){
 		try {
-			crawlDelay = Integer.parseInt(delay);
+			crawlDelay = Integer.parseInt(delay) * 1000; //convert to millis
 		} catch (Exception e) {}
 	}
 	

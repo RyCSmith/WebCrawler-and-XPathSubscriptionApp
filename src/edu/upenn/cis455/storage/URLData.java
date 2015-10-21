@@ -13,13 +13,13 @@ public class URLData {
 	
 	@PrimaryKey
 	private String url;
-	@SecondaryKey(relate=ONE_TO_ONE)
+	@SecondaryKey(relate=MANY_TO_ONE)
 	private int contentSize;
-	@SecondaryKey(relate=ONE_TO_ONE)
+	@SecondaryKey(relate=MANY_TO_ONE)
 	private long lastAccessed;
-	@SecondaryKey(relate=ONE_TO_ONE)
+	@SecondaryKey(relate=MANY_TO_ONE)
 	Type type;
-	@SecondaryKey(relate=ONE_TO_ONE)
+	@SecondaryKey(relate=MANY_TO_ONE)
 	private String content;
 	
 	public String getUrl() {

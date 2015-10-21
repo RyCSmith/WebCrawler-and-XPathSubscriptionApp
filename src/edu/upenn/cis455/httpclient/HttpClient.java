@@ -115,7 +115,7 @@ public class HttpClient {
 		else if (typeString.equalsIgnoreCase("application/rss"))
 			return Type.RSS;
 		else if (typeString.equalsIgnoreCase("application/rss+xml"))
-			return Type.RSS;
+			return Type.XML;
 		else if (typeString.matches(".*(text/html|TEXT/HTML).*"))
 			return Type.HTML;
 		else if (typeString.matches(".*(text/xml|TEXT/XML).*"))
@@ -124,8 +124,8 @@ public class HttpClient {
 			return Type.XML;
 		else if (typeString.matches(".*(application/rss|APPLICATION/RSS).*"))
 			return Type.RSS;
-		else if (typeString.matches(".*(application/rss+xml|APPLICATION/RSS+XML).*"))
-			return Type.RSS;
+		else if (typeString.matches(".*\\+(xml|XML).*"))
+			return Type.XML;
 		else
 			return Type.UNKNOWN;
 	}
