@@ -83,6 +83,7 @@ public class CreateAccountServlet extends HttpServlet{
 				} catch (IOException e) {
 				}
 			}
+			database.closeDB();
 		}
 		
 		private void sendResponse(HttpServletResponse response, String message) {

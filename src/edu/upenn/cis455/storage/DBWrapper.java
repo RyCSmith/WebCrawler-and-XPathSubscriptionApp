@@ -17,6 +17,7 @@ import com.sleepycat.persist.StoreConfig;
 import edu.upenn.cis455.httpclient.HttpClient;
 import edu.upenn.cis455.servlet.ServletSupport;
 import edu.upenn.cis455.xpathengine.XPathEngineImpl;
+import edu.upenn.cis455.httpclient.HttpClient.Type;
 
 
 public class DBWrapper {

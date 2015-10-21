@@ -27,8 +27,19 @@
             </classpath>
         </javac>
     </target>
+	
+	 <target name="compile-httpclient" depends="compile-crawler" description="Compiles the httpclient">
+	        <mkdir dir="${classes.dir}"/>
+	        <javac srcdir="src/edu/upenn/cis455/httpclient" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
+	            <classpath>
+	                <fileset dir="${inputlib.dir}">
+	                    <include name="*.jar"/>
+	                </fileset>
+	            </classpath>
+	        </javac>
+	    </target>
     
-    <target name="compile-storage" depends="compile-xpathengine" description="Compiles the storage system">
+    <target name="compile-storage" depends="compile-xpathengine,compile-httpclient" description="Compiles the storage system">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src/edu/upenn/cis455/storage" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
             <classpath>
@@ -49,17 +60,6 @@
             </classpath>
         </javac>
     </target>
-	
-	 <target name="compile-httpclient" description="Compiles the httpclient">
-	        <mkdir dir="${classes.dir}"/>
-	        <javac srcdir="src/edu/upenn/cis455/httpclient" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
-	            <classpath>
-	                <fileset dir="${inputlib.dir}">
-	                    <include name="*.jar"/>
-	                </fileset>
-	            </classpath>
-	        </javac>
-	    </target>
     
     <target name="compile-servlet" depends="compile-xpathengine,compile-storage,compile-httpclient" description="Compiles the servlet">
         <mkdir dir="${classes.dir}"/>
