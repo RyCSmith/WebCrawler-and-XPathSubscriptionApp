@@ -183,22 +183,13 @@ public class DBWrapper {
 		return u.getChannels();
 	}
 	
-	public void addChannel(String username, String channelName, String[] xpaths) {
-		//control printing
-		System.out.println("Got to add channel: username: " + username + " channelName: " + channelName+ "\nprintingpaths:");
-		int counter = 0;
-		for (String path: xpaths) {
-			System.out.println(counter + " " + path);
-			counter++;
-		}
-		
-		
+	public void addChannel(String username, String channelName, String[] xpaths) {		
 		for (String path : xpaths) {
 			XPath x = xpathStore.pIdx.get(path);
 			if (x != null)
 				continue;
 			x = new XPath();
-			//this is where evaluating for articles should take place
+			matchNewXPath(x);
 			x.setXpathString(path);
 			xpathStore.pIdx.put(x);
 		}
@@ -213,6 +204,29 @@ public class DBWrapper {
 		u.setChannels(channels);
 		userStore.pIdx.put(u);
 		
+	}
+	
+	public void matchNewXPath(XPath xpath) {
+		PrimaryIndex<String,URLData> urlIterator = store.getPrimaryIndex(String.class, URLData.class);
+		EntityCursor<URLData> url_cursor = urlIterator.entities();
+		for (URLData currentURL : url_cursor) {
+			try {
+				XPathEngineImpl engine = new XPathEngineImpl();
+				String[] paths = { xpath.getXpathString() };
+				engine.setXPaths(paths);
+				Document domDoc;
+				if (currentURL.getType() == URLData.Type.HTML)
+					domDoc = DocumentServices.buildDocFromString(currentURL.getContent(), HttpClient.Type.HTML);
+				else
+					domDoc = DocumentServices.buildDocFromString(currentURL.getContent(), HttpClient.Type.XML);
+				boolean[] results = engine.evaluate(domDoc);
+				if (results[0]) {
+					xpath.getArticleUrls().add(currentURL.getUrl());
+					System.out.println("Adding one in");
+				}
+			} catch (Exception e) {}
+		}
+		url_cursor.close();
 	}
 	
 	public void deleteChannel(String username, String channelName) {

@@ -59,8 +59,8 @@ public class XPathCrawler {
 			initialDomainQueue.addToQueue(startURL);
 			masterQueue.offer(initialDomainQueue);
 			//database.deleteAllDocs();
-			run();
-			//database.testPrint();
+			//run();
+			database.testPrint();
 			database.closeDB();
 		} catch (Exception e) {
 			System.out.println("An error occurred. Here is its stack trace:");
