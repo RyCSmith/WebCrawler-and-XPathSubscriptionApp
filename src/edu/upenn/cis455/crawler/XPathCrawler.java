@@ -26,10 +26,13 @@ public class XPathCrawler {
 	HashSet<String> crawledThisSession;
 	
 	public static void main(String[] args) {
-		new XPathCrawler(args);
+		XPathCrawler crawler = new XPathCrawler();
+		crawler.initializeAndRun(args);
 	}
 	
-	public XPathCrawler(String[] args) {
+	public XPathCrawler() {}
+	
+	public void initializeAndRun(String[] args) {
 		if (args.length < 3) {
 			System.out.println("Improper arguments.");
 			System.exit(1);
@@ -55,6 +58,7 @@ public class XPathCrawler {
 			initialDomainQueue.setRobotsInfo(robotstxt);
 			initialDomainQueue.addToQueue(startURL);
 			masterQueue.offer(initialDomainQueue);
+			//database.deleteAllDocs();
 			run();
 			//database.testPrint();
 			database.closeDB();
@@ -69,7 +73,7 @@ public class XPathCrawler {
 
 	public void run() {
 		int docsReceived = 0;
-		while (!masterQueue.isEmpty() && docsReceived < maxNumFiles){
+		while (!masterQueue.isEmpty() && docsReceived < maxNumFiles) {
 			//get next element - check crawl delay and return to end of queue if crawled too recently
 			DomainQueue domainQ = masterQueue.poll();
 			int crawlDelay = domainQ.getRobotsInfo().getCrawlDelay();
@@ -86,6 +90,8 @@ public class XPathCrawler {
 				currentQueueContents.remove(domainQ.getDomain()); //otherwise removed from map of current queue domains
 			
 			HttpClient client = CrawlerResources.attemptRequest(url, "HEAD");
+			if (client == null)
+				continue;
 			crawledThisSession.add(url); //records url so that it will not be crawled again in this execution
 			if ((client.getContentLength() > maxSizeBytes) || 
 					(client.getContentType() == HttpClient.Type.UNKNOWN)) {
@@ -95,30 +101,35 @@ public class XPathCrawler {
 			URLData data = database.getURLData(url);
 			if (data != null) { //case = URL exists in DB - has been crawled before
 				if (data.getLastAccessed() > client.getLastModified()) { //case = content has not been modified since last crawled
-					updateQueues(url, data.getContent());
+					if (data.getType() == URLData.Type.HTML)
+						updateQueues(url, data.getContent());
 					database.updateLastAccessed(url);
 					docsReceived++;
 					continue;
 				}
 				else { //case = content has been modified since last crawl 
+					domainQ.setLastCrawled();
 					HttpClient getClient = CrawlerResources.attemptRequest(url, "GET");
 					if (getClient != null) {
 						database.updateURLData(url, getClient);
-						if (getClient.getContentType() == HttpClient.Type.XML)
+						if (getClient.getContentType() == HttpClient.Type.XML || getClient.getContentType() == HttpClient.Type.RSS)
 							database.updateXPaths(url, getClient.getDocument(), getClient.getContentType());
-						updateQueues(url, getClient.getDocument());
+						if (getClient.getContentType() == HttpClient.Type.HTML)
+							updateQueues(url, getClient.getDocument());
 						docsReceived++;
 					}
 					continue;
 				}
 			}
 			else { //case = URL does not exist in DB
+				domainQ.setLastCrawled();
 				HttpClient getClient = CrawlerResources.attemptRequest(url, "GET");
 				if (getClient != null) {
 					database.addNewURLData(url, getClient);
-					if (getClient.getContentType() == HttpClient.Type.XML)
+					if (getClient.getContentType() == HttpClient.Type.XML || getClient.getContentType() == HttpClient.Type.RSS)
 						database.updateXPaths(url, getClient.getDocument(), getClient.getContentType());
-					updateQueues(url, getClient.getDocument());
+					if (getClient.getContentType() == HttpClient.Type.HTML)
+						updateQueues(url, getClient.getDocument());
 					docsReceived++;
 				}
 			}
@@ -135,15 +146,18 @@ public class XPathCrawler {
     		String domain = URLHelper.extractDomain(link);
     		DomainQueue current = currentQueueContents.get(domain);
     		if (current != null) { //case = a queue for this domain already exists - add link to queue
-    			current.addToQueue(link);
+    			if (CrawlerResources.allowedToCrawl(link, current.getRobotsInfo()))
+    				current.addToQueue(link);
     		}
     		else { //case = a queue for this domain does not exist - create new DomainQueue and add to masters
     			RobotsTxtInfo robotsTxt = CrawlerResources.processRobotsTxt(link);
     			DomainQueue newDomainQueue = new DomainQueue(domain);
     			currentQueueContents.put(domain, newDomainQueue);
     			newDomainQueue.setRobotsInfo(robotsTxt);
-    			newDomainQueue.addToQueue(link);
-    			masterQueue.offer(newDomainQueue);
+    			if (CrawlerResources.allowedToCrawl(link, robotsTxt)) {
+	    			newDomainQueue.addToQueue(link);
+	    			masterQueue.offer(newDomainQueue);
+    			}
     		}
     	}
     }

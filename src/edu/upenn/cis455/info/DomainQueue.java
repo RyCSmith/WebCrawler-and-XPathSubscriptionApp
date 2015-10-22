@@ -55,6 +55,10 @@ public class DomainQueue {
 		this.lastCrawled = lastCrawled;
 	}
 	
+	public void setLastCrawled() {
+		lastCrawled = System.currentTimeMillis();
+	}
+	
 	
 	
 }

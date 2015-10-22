@@ -123,6 +123,7 @@ public class DBWrapper {
 				xpathStore.pIdx.put(path);
 			}
 		}
+		xp_cursor.close();
 	}
 	
 	public boolean checkUserExists(String username) {
@@ -163,6 +164,7 @@ public class DBWrapper {
 		for (URLData current : data_cursor) {
 			System.out.println(current.getUrl() + current.getLastAccessed());
 		}
+		data_cursor.close();
 	}
 	
 	public Set<String> getUserChannels(String username) {
@@ -256,6 +258,15 @@ public class DBWrapper {
 			}
 			channelsData.put(channel.getChannelPath(), dataSet);
 		}
+		chan_cursor.close();
 		return channelsData;
+	}
+	
+	public void deleteAllDocs() {
+		PrimaryIndex<String, URLData> data = store.getPrimaryIndex(String.class, URLData.class);
+		EntityCursor<URLData> data_cursor = data.entities();
+		for (URLData d : data_cursor) {
+			dataStore.pIdx.delete(d.getUrl());
+		}
 	}
 }

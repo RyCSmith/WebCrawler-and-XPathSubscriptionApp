@@ -32,7 +32,7 @@ public class ChannelServlet extends HttpServlet {
 				StringBuilder builder = new StringBuilder();
 				builder.append("<html><body>");
 				for (String xpath : articles.keySet()) {
-					builder.append("<div>XPath: " + xpath + " matched the following articles.</div><br><br>");
+					builder.append("<div><b>XPath: " + xpath + " matched the following articles.</b></div><br><br>");
 					Set<URLData> pathArticles = articles.get(xpath);
 					for (URLData data : pathArticles) {
 						builder.append("<div>URL: " + data.getUrl() + "</div><br>");
@@ -42,6 +42,7 @@ public class ChannelServlet extends HttpServlet {
 				}
 				builder.append("</body></html>");
 				sendResponse(response, builder.toString());
+				database.closeDB();
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

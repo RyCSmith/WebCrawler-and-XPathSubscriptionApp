@@ -76,6 +76,7 @@ public class CreateChannelServlet extends HttpServlet {
 			String channelName = request.getParameter("channelName");
 			database.addChannel(username, channelName, xpaths);
 			response.sendRedirect("/servlet/account");
+			database.closeDB();
 		} catch (Exception e) {
 			e.printStackTrace();
 			String message = "<html><body><div>An error occurred while attempting to create"

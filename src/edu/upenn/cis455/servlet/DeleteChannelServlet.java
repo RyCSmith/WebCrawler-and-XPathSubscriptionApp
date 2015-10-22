@@ -26,6 +26,7 @@ public class DeleteChannelServlet extends HttpServlet {
 			String channelName = request.getParameter("delete");
 			database.deleteChannel(username, channelName);
 			response.sendRedirect("/servlet/account");
+			database.closeDB();
 		} catch (Exception e) {
 			e.printStackTrace();
 			String message = "<html><body><div>An error occurred while attempting to create"

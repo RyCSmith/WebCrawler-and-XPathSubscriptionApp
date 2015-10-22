@@ -26,9 +26,15 @@ public class CrawlerResources {
     }
     
     public static void qualifyLinks(String url, ArrayList<String> links) {
-    	//match a regex - this will fail is ends with .com/.edu etc.
-    	if (!url.endsWith("/"))
-    		url = url.substring(0, url.lastIndexOf('/') + 1);
+    	if (url.endsWith(".com") || url.endsWith(".org") || 
+    			url.endsWith(".gov") || url.endsWith(".edu") || url.endsWith(".net"))
+    		url = url + '/';
+    	else if (!url.endsWith("/")) {
+    		if (url.lastIndexOf('.') > url.lastIndexOf('/'))
+    			url = url.substring(0, url.lastIndexOf('/') + 1);
+    		else
+    			url = url + '/';
+    	}
     	for (int i = 0; i < links.size(); i++) {
     		String link = links.get(i);
     		link = link.substring(link.indexOf("\"") + 1);
@@ -43,6 +49,7 @@ public class CrawlerResources {
     		}
     	}
     }
+    
     public static RobotsTxtInfo processRobotsTxt(String url) {
     	String robotsText = fetchRobotsTxtText(url);
     	String[] lines = robotsText.split("\n");
@@ -150,6 +157,15 @@ public class CrawlerResources {
     	}
     }
     
-
+    public static boolean allowedToCrawl(String url, RobotsTxtInfo robotsTxt) {
+    	HashSet<String> disallowedLinks = robotsTxt.getDisallowedLinks();
+    	if (disallowedLinks.contains("/"))
+    		return false;
+    	for (String link : disallowedLinks) {
+			if (url.matches(".*" + link + ".*"))
+				return false;
+    	}
+    	return true;
+    }
     
 }

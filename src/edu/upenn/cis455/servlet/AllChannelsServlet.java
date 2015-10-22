@@ -35,7 +35,7 @@ public class AllChannelsServlet extends HttpServlet {
 			}
 			builder.append("</body></html>");
 			sendResponse(response, builder.toString());
-			
+			database.closeDB();
 		} catch(Exception e) {
 			e.printStackTrace();
 			sendResponse(response, "<html><body><div>An error occurred while displaying "

@@ -39,6 +39,7 @@ public class AccountServlet extends HttpServlet {
 				}
 				accountDisplay.append("</ul></div></body></html>");
 				sendResponse(response, accountDisplay.toString());
+				database.closeDB();
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
