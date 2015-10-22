@@ -17,7 +17,29 @@
     <property name="resources.dir" location="${build.dir}${file.separator}resources"/>
     <property name="conf.dir"      location="${build.dir}${file.separator}conf"/>
 
-    <target name="compile-xpathengine" description="Compiles the XPath engine">
+	<target name="compile-info" description="Compiles info package">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="src/edu/upenn/cis455/info" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
+            <classpath>
+                <fileset dir="${inputlib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+	
+	 <target name="compile-httpclient" depends="compile-info" description="Compiles the httpclient">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="src/edu/upenn/cis455/httpclient" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
+            <classpath>
+                <fileset dir="${inputlib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+		
+    <target name="compile-xpathengine" depends="compile-httpclient" description="Compiles the XPath engine">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src/edu/upenn/cis455/xpathengine" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
             <classpath>
@@ -27,17 +49,6 @@
             </classpath>
         </javac>
     </target>
-	
-	 <target name="compile-httpclient" depends="compile-crawler" description="Compiles the httpclient">
-	        <mkdir dir="${classes.dir}"/>
-	        <javac srcdir="src/edu/upenn/cis455/httpclient" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
-	            <classpath>
-	                <fileset dir="${inputlib.dir}">
-	                    <include name="*.jar"/>
-	                </fileset>
-	            </classpath>
-	        </javac>
-	    </target>
     
     <target name="compile-storage" depends="compile-xpathengine,compile-httpclient" description="Compiles the storage system">
         <mkdir dir="${classes.dir}"/>

@@ -18,6 +18,7 @@ import org.xml.sax.SAXException;
 import edu.upenn.cis455.httpclient.HttpClient;
 import edu.upenn.cis455.xpathengine.XPathEngineFactory;
 import edu.upenn.cis455.xpathengine.XPathEngineImpl;
+import edu.upenn.cis455.xpathengine.DocumentServices;
 
 @SuppressWarnings("serial")
 public class XPathServlet extends HttpServlet {
@@ -78,18 +79,18 @@ public class XPathServlet extends HttpServlet {
 			String url = request.getParameter("url");
 			if (url != null && !url.equals("")) {
 				Document domDoc;
-				if (ServletSupport.checkIsLocal(url)){
-					domDoc = ServletSupport.buildDocument(url, true);
+				if (DocumentServices.checkIsLocal(url)){
+					domDoc = DocumentServices.buildDocument(url, true);
 				} 
 				else {
 					HttpClient client = new HttpClient(request.getParameter("url"), "GET");
 					client.makeRequest();
-					domDoc = ServletSupport.buildDocument(client.getDocument(), false);
+					domDoc = DocumentServices.buildDocument(client.getDocument(), false);
 				}
 				if (domDoc == null)
 					throw new IllegalStateException();
 				XPathEngineImpl xPathEngine = (XPathEngineImpl) XPathEngineFactory.getXPathEngine();
-				String[] xpaths = ServletSupport.getXPathsFromPost(request);
+				String[] xpaths = DocumentServices.getXPathsFromPost(request);
 				xPathEngine.setXPaths(xpaths);
 				boolean[] results = xPathEngine.evaluate(domDoc);
 				

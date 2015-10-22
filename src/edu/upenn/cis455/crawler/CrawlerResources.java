@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.regex.*;
 
-import edu.upenn.cis455.crawler.info.DomainQueue;
-import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
-import edu.upenn.cis455.crawler.info.URLHelper;
+import edu.upenn.cis455.info.DomainQueue;
+import edu.upenn.cis455.info.RobotsTxtInfo;
+import edu.upenn.cis455.info.URLHelper;
 import edu.upenn.cis455.httpclient.HttpClient;
 import edu.upenn.cis455.httpclient.HttpsClient;
 public class CrawlerResources {

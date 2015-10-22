@@ -1,4 +1,4 @@
-package edu.upenn.cis455.crawler.info;
+package edu.upenn.cis455.info;
 
 public class URLInfo {
 	private String hostName;

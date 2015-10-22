@@ -1,4 +1,4 @@
-package edu.upenn.cis455.crawler.info;
+package edu.upenn.cis455.info;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,4 +1,4 @@
-package edu.upenn.cis455.crawler.info;
+package edu.upenn.cis455.info;
 
 public class URLHelper {
 	public static enum Protocol {HTTP, HTTPS, UNKNOWN};

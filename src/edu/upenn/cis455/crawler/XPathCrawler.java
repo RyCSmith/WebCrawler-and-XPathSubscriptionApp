@@ -7,13 +7,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import edu.upenn.cis455.crawler.info.DomainQueue;
-import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
+import edu.upenn.cis455.info.DomainQueue;
+import edu.upenn.cis455.info.RobotsTxtInfo;
 import edu.upenn.cis455.httpclient.HttpClient;
 import edu.upenn.cis455.httpclient.HttpsClient;
 import edu.upenn.cis455.storage.DBWrapper;
 import edu.upenn.cis455.storage.URLData;
-import edu.upenn.cis455.crawler.info.URLHelper;
+import edu.upenn.cis455.info.URLHelper;
 
 
 public class XPathCrawler {

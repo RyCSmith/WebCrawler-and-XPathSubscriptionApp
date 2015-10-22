@@ -17,7 +17,7 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import edu.upenn.cis455.crawler.info.URLInfo;
+import edu.upenn.cis455.info.URLInfo;
 
 public class HttpsClient extends HttpClient {
 	URL url;

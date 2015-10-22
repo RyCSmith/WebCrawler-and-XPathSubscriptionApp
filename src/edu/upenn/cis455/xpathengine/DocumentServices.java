@@ -1,16 +1,13 @@
-package edu.upenn.cis455.servlet;
+package edu.upenn.cis455.xpathengine;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -22,12 +19,10 @@ import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 import org.xml.sax.InputSource;
 
-import edu.upenn.cis455.crawler.info.URLInfo;
 import edu.upenn.cis455.httpclient.HttpClient;
-import edu.upenn.cis455.xpathengine.Parser;
+import edu.upenn.cis455.info.URLInfo;
 
-public class ServletSupport {
-
+public class DocumentServices {
 	public static String[] getXPathsFromPost(HttpServletRequest request) {
 		ArrayList<String> xpathList = new ArrayList<String>();
 		Map<String, String[]> param = request.getParameterMap();

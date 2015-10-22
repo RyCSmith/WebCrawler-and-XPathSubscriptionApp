@@ -1,6 +1,9 @@
 package edu.upenn.cis455.storage;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -15,8 +18,8 @@ import com.sleepycat.persist.PrimaryIndex;
 import com.sleepycat.persist.StoreConfig;
 
 import edu.upenn.cis455.httpclient.HttpClient;
-import edu.upenn.cis455.servlet.ServletSupport;
 import edu.upenn.cis455.xpathengine.XPathEngineImpl;
+import edu.upenn.cis455.xpathengine.DocumentServices;
 import edu.upenn.cis455.httpclient.HttpClient.Type;
 
 
@@ -74,13 +77,13 @@ public class DBWrapper {
 		currentData.setContentSize(client.getContentLength());
 		currentData.setContent(client.getDocument());
 		currentData.setLastAccessed(System.currentTimeMillis());
-		//dataStore.pIdx.put(currentData);
+		dataStore.pIdx.put(currentData);
 	}
 	
 	public void updateLastAccessed(String url) {
 		URLData currentData = dataStore.pIdx.get(url);
 		currentData.setLastAccessed(System.currentTimeMillis());
-		//dataStore.pIdx.put(currentData);
+		dataStore.pIdx.put(currentData);
 	}
 	
 	public void addNewURLData(String url, HttpClient client) {
@@ -112,18 +115,29 @@ public class DBWrapper {
 			XPathEngineImpl engine = new XPathEngineImpl();
 			String[] paths = { path.getXpathString() };
 			engine.setXPaths(paths);
-			Document domDoc = ServletSupport.buildDocFromString(document, type);
+			Document domDoc = DocumentServices.buildDocFromString(document, type);
 			boolean[] results = engine.evaluate(domDoc);
 			if (results[0]) {
 				path.getArticleUrls().add(url);
-				//xpathStore.pIdx.put(path);
+				xpathStore.pIdx.put(path);
 			}
 		}
 	}
 	
 	public boolean checkUserExists(String username) {
-		User u = userStore.pIdx.get("smithryc");
+		User u = userStore.pIdx.get(username);
 		return u != null;
+	}
+	
+	public boolean checkPassword(String username, String password) {
+		System.out.println("in pass check: username: " + username + " password: " + password);
+		User u = userStore.pIdx.get(username);
+		if (u == null)
+			return false;
+		System.out.println("User was not null. pass is: "+ u.getPassword());
+		if (u.getPassword().equals(password))
+			return true;
+		return false;
 	}
 	
 	public void addUser(String username, String password) {
@@ -148,6 +162,54 @@ public class DBWrapper {
 		for (URLData current : data_cursor) {
 			System.out.println(current.getUrl() + current.getLastAccessed());
 		}
+	}
+	
+	public Set<String> getUserChannels(String username) {
+		System.out.println("Got to getChannels: username: " + username );
+		User u = userStore.pIdx.get(username);
+		if (u == null)
+			return new HashSet<String>();
+		//control printing
+		System.out.println("User was not null\nprinting channels:" );
+		int counter = 0;
+		Set<String> channels = u.getChannels();
+		for (String channel : channels) {
+			System.out.println(counter + channel);
+		}
+		
+		return u.getChannels();
+	}
+	
+	public void addChannel(String username, String channelName, String[] xpaths) {
+		//control printing
+		System.out.println("Got to add channel: username: " + username + " channelName: " + channelName+ "\nprintingpaths:");
+		int counter = 0;
+		for (String path: xpaths) {
+			System.out.println(counter + " " + path);
+			counter++;
+		}
+		
+		
+		for (String path : xpaths) {
+			XPath x = xpathStore.pIdx.get(path);
+			if (x != null)
+				continue;
+			x = new XPath();
+			//this is where evaluating for articles should take place
+			x.setXpathString(path);
+			xpathStore.pIdx.put(x);
+		}
+		Channel c = new Channel();
+		c.setChannelPath(channelName);
+		Set<String> pathSet = new HashSet<String>(Arrays.asList(xpaths)); 
+		c.setXpaths(pathSet);
+		channelStore.pIdx.put(c);
+		User u = userStore.pIdx.get(username);
+		Set<String> channels = u.getChannels();
+		channels.add(c.getChannelPath());
+		u.setChannels(channels);
+		userStore.pIdx.put(u);
+		
 	}
 	
 }

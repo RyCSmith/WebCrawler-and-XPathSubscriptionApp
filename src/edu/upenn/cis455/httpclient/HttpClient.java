@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 import java.text.ParseException;
 
-import edu.upenn.cis455.crawler.info.URLInfo;
+import edu.upenn.cis455.info.URLInfo;
 
 public class HttpClient {
 	URLInfo urlInfo;
