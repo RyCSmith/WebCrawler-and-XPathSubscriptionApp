@@ -3,6 +3,7 @@ package edu.upenn.cis455.storage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -212,4 +213,49 @@ public class DBWrapper {
 		
 	}
 	
+	public void deleteChannel(String username, String channelName) {
+		channelStore.pIdx.delete(channelName);
+		User u = userStore.pIdx.get(username);
+		Set<String> channels = u.getChannels();
+		channels.remove(channelName);
+		u.setChannels(channels);
+		userStore.pIdx.put(u);
+	}
+	
+	public HashMap<String, Set<URLData>> getChannelArticles(String channelName) {
+		HashMap<String, Set<URLData>> articles = new HashMap<String, Set<URLData>>();
+		Channel c = channelStore.pIdx.get(channelName);
+		Set<String> paths = c.getXpaths();
+		for (String path : paths) {
+			XPath x = xpathStore.pIdx.get(path);
+			Set<URLData> dataSet = new HashSet<URLData>();
+			Set<String> urls = x.getArticleUrls();
+			for (String url : urls) {
+				URLData data = dataStore.pIdx.get(url);
+				dataSet.add(data);
+			}
+			articles.put(x.getXpathString(), dataSet);
+		}
+		return articles;
+	}
+	
+	public HashMap<String, Set<URLData>> getAllChannelsContent() {
+		HashMap<String, Set<URLData>> channelsData = new HashMap<String, Set<URLData>>();
+		PrimaryIndex<String, Channel> chan = store.getPrimaryIndex(String.class, Channel.class);
+		EntityCursor<Channel> chan_cursor = chan.entities();
+		for (Channel channel : chan_cursor) {
+			Set<URLData> dataSet = new HashSet<URLData>();
+			Set<String> paths = channel.getXpaths();
+			for (String path : paths) {
+				XPath x = xpathStore.pIdx.get(path);
+				Set<String> urls = x.getArticleUrls();
+				for (String url : urls) {
+					URLData data = dataStore.pIdx.get(url);
+					dataSet.add(data);
+				}
+			}
+			channelsData.put(channel.getChannelPath(), dataSet);
+		}
+		return channelsData;
+	}
 }

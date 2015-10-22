@@ -70,5 +70,34 @@
      <servlet-name>createChannel</servlet-name>
      <url-pattern>/createChannel</url-pattern>
    </servlet-mapping>  
+   
+   <servlet>
+     <servlet-name>deleteChannel</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.DeleteChannelServlet</servlet-class> 
+   </servlet>
+   
+   <servlet-mapping>
+     <servlet-name>deleteChannel</servlet-name>
+     <url-pattern>/delete</url-pattern>
+   </servlet-mapping> 
+   
+   <servlet>
+     <servlet-name>allChannels</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.AllChannelsServlet</servlet-class> 
+   </servlet>
+   
+   <servlet-mapping>
+     <servlet-name>allChannels</servlet-name>
+     <url-pattern>/allChannels</url-pattern>
+   </servlet-mapping> 
 
+	<servlet>
+     <servlet-name>channel</servlet-name>
+     <servlet-class>edu.upenn.cis455.servlet.ChannelServlet</servlet-class> 
+   </servlet>
+   
+   <servlet-mapping>
+     <servlet-name>channel</servlet-name>
+     <url-pattern>/channel/*</url-pattern>
+   </servlet-mapping> 
 </web-app>

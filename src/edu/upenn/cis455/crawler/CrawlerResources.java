@@ -26,17 +26,19 @@ public class CrawlerResources {
     }
     
     public static void qualifyLinks(String url, ArrayList<String> links) {
-    	String fullDomain = URLHelper.removeFilePath(url);
+    	//match a regex - this will fail is ends with .com/.edu etc.
+    	if (!url.endsWith("/"))
+    		url = url.substring(0, url.lastIndexOf('/') + 1);
     	for (int i = 0; i < links.size(); i++) {
     		String link = links.get(i);
     		link = link.substring(link.indexOf("\"") + 1);
     		link = link.substring(0, link.lastIndexOf("\""));
     		if (!link.startsWith("http")) {
 	    		if (link.startsWith("/")){
-	    			links.set(i, fullDomain + link);
+	    			links.set(i, url + link.substring(1));
 	    		}
 	    		else {
-	    			links.set(i, fullDomain + "/" + link);
+	    			links.set(i, url + link);
 	    		}
     		}
     	}

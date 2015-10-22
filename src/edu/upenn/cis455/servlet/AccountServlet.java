@@ -28,12 +28,14 @@ public class AccountServlet extends HttpServlet {
 				StringBuilder accountDisplay = new StringBuilder();
 				accountDisplay.append("<html><body<div>You are logged in as " + username + ".</div><br>");
 				accountDisplay.append("<div><a href=\"/servlet/logout\">Logout</a></div><br>");
+				accountDisplay.append("<div><a href=\"/servlet/home\">Home</a></div><br>");
 				accountDisplay.append("<div><a href=\"/servlet/createChannel\">Create New Channel</a></div><br>");
 				accountDisplay.append("<div><ul>");
 				Set<String> channels = database.getUserChannels(username);
 				for (String channel : channels) {
-					accountDisplay.append("<li><a href=\"/servlet/channel/" + channel + "\">" + channel + "</a>&emsp&emsp&emsp"
-							+ "<a href=\"/servlet/deleteChannel/" + channel + "\">Delete</a>");
+					accountDisplay.append("<li><a href=\"/servlet/channel/" + channel + "\">" + channel + "</a>");
+					accountDisplay.append("<form action=\"/servlet/delete\" method=\"post\"><button name=\"delete\" value=\"" 
+							+ channel +"\">Delete</button></form>");
 				}
 				accountDisplay.append("</ul></div></body></html>");
 				sendResponse(response, accountDisplay.toString());

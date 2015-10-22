@@ -34,29 +34,37 @@ public class XPathCrawler {
 			System.out.println("Improper arguments.");
 			System.exit(1);
 		}
-		//initialize variables
-		startURL = args[0];
-		database = new DBWrapper(args[1]);
-		database.openDB();
-		maxSizeBytes = Integer.parseInt(args[2]) * 1048576; //convert MB to bytes
-		if (args.length == 4)
-			maxNumFiles = Integer.parseInt(args[3]);
-		else
-			maxNumFiles = Integer.MAX_VALUE;
-		masterQueue = new LinkedList<DomainQueue>();
-		crawledThisSession = new HashSet<String>();
-		currentQueueContents = new HashMap<String, DomainQueue>();
-		//process command line URL
-		RobotsTxtInfo robotstxt = CrawlerResources.processRobotsTxt(startURL);
-		String domain = URLHelper.extractDomain(startURL);
-		DomainQueue initialDomainQueue = new DomainQueue(domain);
-		currentQueueContents.put(domain, initialDomainQueue);
-		initialDomainQueue.setRobotsInfo(robotstxt);
-		initialDomainQueue.addToQueue(startURL);
-		masterQueue.offer(initialDomainQueue);
-		//run();
-		database.testPrint();
-		//database.closeDB();
+		try {
+			//initialize variables
+			startURL = args[0];
+			database = new DBWrapper(args[1]);
+			database.openDB();
+			maxSizeBytes = Integer.parseInt(args[2]) * 1048576; //convert MB to bytes
+			if (args.length == 4)
+				maxNumFiles = Integer.parseInt(args[3]);
+			else
+				maxNumFiles = Integer.MAX_VALUE;
+			masterQueue = new LinkedList<DomainQueue>();
+			crawledThisSession = new HashSet<String>();
+			currentQueueContents = new HashMap<String, DomainQueue>();
+			//process command line URL
+			RobotsTxtInfo robotstxt = CrawlerResources.processRobotsTxt(startURL);
+			String domain = URLHelper.extractDomain(startURL);
+			DomainQueue initialDomainQueue = new DomainQueue(domain);
+			currentQueueContents.put(domain, initialDomainQueue);
+			initialDomainQueue.setRobotsInfo(robotstxt);
+			initialDomainQueue.addToQueue(startURL);
+			masterQueue.offer(initialDomainQueue);
+			run();
+			//database.testPrint();
+			database.closeDB();
+		} catch (Exception e) {
+			System.out.println("An error occurred. Here is its stack trace:");
+			e.printStackTrace();
+		} finally {
+			if (database != null)
+				database.closeDB();
+		}
 	}
 
 	public void run() {
