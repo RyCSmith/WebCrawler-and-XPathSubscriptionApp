@@ -17,7 +17,7 @@ public class CrawlerResources {
 
     public static ArrayList<String> parseForLinks(String documentText) {
         ArrayList<String> result = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("\\s*(?i)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))"); //"href=\"([^\"]*)\"" this works too
+        Pattern pattern = Pattern.compile("href=\"([^\"]*)\""); //"href=\"([^\"]*)\"" this works too
         Matcher matcher = pattern.matcher(documentText);
         while (matcher.find()) {
             result.add(matcher.group());
@@ -47,11 +47,15 @@ public class CrawlerResources {
 	    			links.set(i, url + link);
 	    		}
     		}
+    		else
+    			links.set(i, link);
     	}
     }
     
     public static RobotsTxtInfo processRobotsTxt(String url) {
     	String robotsText = fetchRobotsTxtText(url);
+    	if (robotsText == null)
+    		return null;
     	String[] lines = robotsText.split("\n");
     	String bestUserAgent = findBestUserAgent(lines);
     	String[] relevantLines = separateRelevantLines(lines, bestUserAgent);
@@ -134,7 +138,6 @@ public class CrawlerResources {
 	    	client.makeRequest();
 	    	return client.getDocument();
     	} catch (Exception e) {
-    		e.printStackTrace();
     		return null;
     	}
     }
@@ -158,14 +161,18 @@ public class CrawlerResources {
     }
     
     public static boolean allowedToCrawl(String url, RobotsTxtInfo robotsTxt) {
-    	HashSet<String> disallowedLinks = robotsTxt.getDisallowedLinks();
-    	if (disallowedLinks.contains("/"))
+    	try {
+	    	HashSet<String> disallowedLinks = robotsTxt.getDisallowedLinks();
+	    	if (disallowedLinks.contains("/"))
+	    		return false;
+	    	for (String link : disallowedLinks) {
+				if (url.matches(".*" + link + ".*"))
+					return false;
+	    	}
+	    	return true;
+    	} catch (Exception e) {
     		return false;
-    	for (String link : disallowedLinks) {
-			if (url.matches(".*" + link + ".*"))
-				return false;
     	}
-    	return true;
     }
     
 }

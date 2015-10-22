@@ -31,7 +31,7 @@ public class XPathCrawler {
 	}
 	
 	public XPathCrawler() {}
-	
+		
 	public void initializeAndRun(String[] args) {
 		if (args.length < 3) {
 			System.out.println("Improper arguments.");
@@ -83,7 +83,7 @@ public class XPathCrawler {
 			}
 			
 			String url = domainQ.getNext();
-			System.out.println("Working on this URL: " + url);
+			System.out.println("Sending head request for: " + url);
 			if (domainQ.hasNext()) //if it is valid remember to return the DomainQueue if it's holding more URLs 
 				masterQueue.offer(domainQ);
 			else
@@ -101,6 +101,7 @@ public class XPathCrawler {
 			URLData data = database.getURLData(url);
 			if (data != null) { //case = URL exists in DB - has been crawled before
 				if (data.getLastAccessed() > client.getLastModified()) { //case = content has not been modified since last crawled
+					System.out.println("\tCurrent version found in databse.");
 					if (data.getType() == URLData.Type.HTML)
 						updateQueues(url, data.getContent());
 					database.updateLastAccessed(url);
@@ -108,6 +109,7 @@ public class XPathCrawler {
 					continue;
 				}
 				else { //case = content has been modified since last crawl 
+					System.out.println("\tFound in database but out of date. Attempting to download.");
 					domainQ.setLastCrawled();
 					HttpClient getClient = CrawlerResources.attemptRequest(url, "GET");
 					if (getClient != null) {
@@ -122,6 +124,7 @@ public class XPathCrawler {
 				}
 			}
 			else { //case = URL does not exist in DB
+				System.out.println("\tNot in database. Attempting to download.");
 				domainQ.setLastCrawled();
 				HttpClient getClient = CrawlerResources.attemptRequest(url, "GET");
 				if (getClient != null) {
@@ -151,6 +154,8 @@ public class XPathCrawler {
     		}
     		else { //case = a queue for this domain does not exist - create new DomainQueue and add to masters
     			RobotsTxtInfo robotsTxt = CrawlerResources.processRobotsTxt(link);
+    			if (robotsTxt == null)
+    				continue;
     			DomainQueue newDomainQueue = new DomainQueue(domain);
     			currentQueueContents.put(domain, newDomainQueue);
     			newDomainQueue.setRobotsInfo(robotsTxt);
