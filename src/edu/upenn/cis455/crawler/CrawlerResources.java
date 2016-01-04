@@ -17,7 +17,7 @@ public class CrawlerResources {
 
     public static ArrayList<String> parseForLinks(String documentText) {
         ArrayList<String> result = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("href=\"([^\"]*)\""); //"href=\"([^\"]*)\"" this works too
+        Pattern pattern = Pattern.compile("(href=\"([^\"]*)\"|HREF=\"([^\"]*)\")");
         Matcher matcher = pattern.matcher(documentText);
         while (matcher.find()) {
             result.add(matcher.group());

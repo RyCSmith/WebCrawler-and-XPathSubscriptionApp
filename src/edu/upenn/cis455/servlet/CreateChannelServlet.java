@@ -41,6 +41,7 @@ public class CreateChannelServlet extends HttpServlet {
 					"			  <button type=\"button\" id=\"add-button\">Add Another XPath</button>" +
 					"			  <input type=\"submit\" value=\"Submit\" style=\"width:100px;\">" +
 					"			</form></div>" +
+					"			<br><div>Note, for storage purposes, channel name should not be exact same as xpath.</div>" +
 					"		</center>" +
 					"	</body>" +
 					"	<script>"+

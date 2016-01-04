@@ -16,7 +16,7 @@ public class HttpClientTest {
 	@Before
 	public void setUp() throws Exception {
 		final String URL = "http://www.w3schools.com/xml/plant_catalog.xml";
-		client = new HttpClient(URL);
+		client = new HttpClient(URL, "GET");
 		client.makeRequest();
 	}
 
@@ -25,7 +25,6 @@ public class HttpClientTest {
 		String retrievedDocument = client.getDocument();
 		assertNotNull(retrievedDocument);
 		assertTrue(retrievedDocument.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
-		System.out.println(client.getDocument());
 	}
 	
 	@Test

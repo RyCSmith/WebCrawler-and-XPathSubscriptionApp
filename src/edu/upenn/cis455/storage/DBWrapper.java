@@ -132,11 +132,9 @@ public class DBWrapper {
 	}
 	
 	public boolean checkPassword(String username, String password) {
-		System.out.println("in pass check: username: " + username + " password: " + password);
 		User u = userStore.pIdx.get(username);
 		if (u == null)
 			return false;
-		System.out.println("User was not null. pass is: "+ u.getPassword());
 		if (u.getPassword().equals(password))
 			return true;
 		return false;
@@ -168,29 +166,22 @@ public class DBWrapper {
 	}
 	
 	public Set<String> getUserChannels(String username) {
-		System.out.println("Got to getChannels: username: " + username );
 		User u = userStore.pIdx.get(username);
 		if (u == null)
 			return new HashSet<String>();
-		//control printing
-		System.out.println("User was not null\nprinting channels:" );
 		int counter = 0;
-		Set<String> channels = u.getChannels();
-		for (String channel : channels) {
-			System.out.println(counter + channel);
-		}
-		
+		Set<String> channels = u.getChannels();		
 		return u.getChannels();
 	}
 	
-	public void addChannel(String username, String channelName, String[] xpaths) {		
+	public void addChannel(String username, String channelName, String[] xpaths) {	
 		for (String path : xpaths) {
 			XPath x = xpathStore.pIdx.get(path);
 			if (x != null)
 				continue;
 			x = new XPath();
-			matchNewXPath(x);
 			x.setXpathString(path);
+			matchNewXPath(x);
 			xpathStore.pIdx.put(x);
 		}
 		Channel c = new Channel();
@@ -222,7 +213,6 @@ public class DBWrapper {
 				boolean[] results = engine.evaluate(domDoc);
 				if (results[0]) {
 					xpath.getArticleUrls().add(currentURL.getUrl());
-					System.out.println("Adding one in");
 				}
 			} catch (Exception e) {}
 		}
@@ -282,5 +272,17 @@ public class DBWrapper {
 		for (URLData d : data_cursor) {
 			dataStore.pIdx.delete(d.getUrl());
 		}
+		data_cursor.close();
+	}
+	
+	public int totalDocsContained() {
+		int count = 0;
+		PrimaryIndex<String, URLData> data = store.getPrimaryIndex(String.class, URLData.class);
+		EntityCursor<URLData> data_cursor = data.entities();
+		for (URLData d : data_cursor) {
+			count++;
+		}
+		data_cursor.close();
+		return count;
 	}
 }

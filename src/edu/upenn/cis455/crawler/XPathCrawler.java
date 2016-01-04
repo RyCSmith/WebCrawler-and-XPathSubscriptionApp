@@ -1,3 +1,4 @@
+
 package edu.upenn.cis455.crawler;
 
 import java.net.MalformedURLException;
@@ -59,8 +60,8 @@ public class XPathCrawler {
 			initialDomainQueue.addToQueue(startURL);
 			masterQueue.offer(initialDomainQueue);
 			//database.deleteAllDocs();
-			//run();
-			database.testPrint();
+			run();
+			//database.testPrint();
 			database.closeDB();
 		} catch (Exception e) {
 			System.out.println("An error occurred. Here is its stack trace:");
@@ -101,7 +102,7 @@ public class XPathCrawler {
 			URLData data = database.getURLData(url);
 			if (data != null) { //case = URL exists in DB - has been crawled before
 				if (data.getLastAccessed() > client.getLastModified()) { //case = content has not been modified since last crawled
-					System.out.println("\tCurrent version found in databse.");
+					System.out.println("\tCurrent version found in database.");
 					if (data.getType() == URLData.Type.HTML)
 						updateQueues(url, data.getContent());
 					database.updateLastAccessed(url);

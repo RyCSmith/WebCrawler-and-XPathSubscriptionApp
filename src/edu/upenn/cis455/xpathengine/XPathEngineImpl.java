@@ -34,12 +34,12 @@ public class XPathEngineImpl implements XPathEngine {
 	  return true;
     }
 	
-    public boolean[] evaluate(Document domDoc) { 
+    public boolean[] evaluate(Document domDoc) {
     	boolean[] results = new boolean[xpaths.length];
     	for (int i = 0; i < xpaths.length; i++) {
-    		String currentXPath = xpaths[i];
-			Parser parserPath = new Parser(currentXPath);
-			try {
+    		try {
+	    		String currentXPath = xpaths[i];
+				Parser parserPath = new Parser(currentXPath);
 				Tree<Token> xpathTree = parserPath.parseXPath();
 				results[i] = evaluateSingleXPath(domDoc.getDocumentElement(),xpathTree);
 			} catch (Exception e){
